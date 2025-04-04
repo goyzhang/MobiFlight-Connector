@@ -155,18 +155,23 @@ namespace MobiFlight.Scripts
                 {
                     string output = reader.ReadToEnd();
                     var x = output.Split(' ');
-                    var v = x[1].Split('.');
-                    Log.Instance.log($"Python version: {x[1]}.", LogSeverity.Info); 
-                    if ( (int.Parse(v[0]) >= 3) && (int.Parse(v[1]) >= 10))
+                    if (x.Length > 1)
                     {
-                        return true;
+                        var v = x[1].Split('.');
+                        Log.Instance.log($"Python version: {x[1]}.", LogSeverity.Info);
+
+                        if (v.Length >= 2 && int.TryParse(v[0], out int major) && int.TryParse(v[1], out int minor))
+                        {
+                            if (major >= 3 && minor >= 10)
+                            {
+                                return true;
+                            }
+                        }
                     }
-                    else
-                    {
-                        return false;
-                    }
+                    Log.Instance.log($"Failed to parse Python version : '{output}'.", LogSeverity.Warn);
                 }
             }
+            return false;
         }
 
         private bool IsPythonPathSet()
